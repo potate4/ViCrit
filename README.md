@@ -12,10 +12,10 @@ Official codebase of "ViCrit: A Verifiable Reinforcement Learning Proxy Task for
 
 If you found this work useful, consider giving this repository a star and citing our paper as followed:
 ```
-@article{wang2025sota,
-  title={SoTA with Less: MCTS-Guided Sample Selection for Data-Efficient Visual Reasoning Self-Improvement},
-  author={Wang, Xiyao and Yang, Zhengyuan and Feng, Chao and Lu, Hongjin and Li, Linjie and Lin, Chung-Ching and Lin, Kevin and Huang, Furong and Wang, Lijuan},
-  journal={arXiv preprint arXiv:2504.07934},
+@article{wang2025vicrit,
+  title={ViCrit: A Verifiable Reinforcement Learning Proxy Task for Visual Perception in VLMs},
+  author={Wang, Xiyao and Yang, Zhengyuan and Feng, Chao and Liang, Yongyuan and Zhou, Yuhang and Liu, Xiaoyu and Zang, Ziyi and Li, Ming and Lin, Chung-Ching and Lin, Kevin and others},
+  journal={arXiv preprint arXiv:2506.10128},
   year={2025}
 }
 ```
