@@ -2,7 +2,7 @@
 model_id="Qwen/Qwen2.5-VL-72B-Instruct"
 model_name="Qwen/Qwen2.5-VL-72B-Instruct"
 
-datasets=("captioncritic")
+datasets=("vicrit")
 
 
 for dataset in "${datasets[@]}"; do
