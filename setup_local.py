@@ -82,10 +82,10 @@ def main():
     print("\nNext steps:")
     print("1. Choose a model from evaluation_local.sh")
     print("2. Run: ./evaluation_local.sh")
-    print("3. Score results: python score.py")
+    print("3. Score results: python score_local.py")
     print("\nRecommended models for local use:")
-    print("- llava-v1.5-7b (7B parameters, good balance)")
-    print("- llava-v1.5-13b (13B parameters, better performance)")
+    print("- llava-hf/llava-1.5-7b-hf (7B parameters, good balance)")
+    print("- llava-hf/llava-1.5-13b-hf (13B parameters, better performance)")
     print("- Qwen/Qwen2.5-VL-7B-Instruct (7B parameters)")
     print("- Salesforce/instructblip-vicuna-7b (7B parameters, lightweight)")
 

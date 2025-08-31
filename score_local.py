@@ -153,7 +153,7 @@ def score_results(results_file):
 def main():
     parser = argparse.ArgumentParser(description="Score ViCrit local evaluation results")
     parser.add_argument("--results-file", type=str, 
-                       default="./eval_files/local/answers/llava-v1.5-7b.jsonl",
+                       default="./eval_files/local/answers/llava-hf_llava-1.5-7b-hf.jsonl",
                        help="Path to results file to score")
     
     args = parser.parse_args()
