@@ -1,0 +1,14 @@
+# Local requirements for ViCrit with smaller models
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.35.0
+datasets>=2.14.0
+Pillow>=9.0.0
+tqdm>=4.64.0
+shortuuid>=1.0.0
+numpy>=1.21.0
+accelerate>=0.20.0
+
+# Optional: for better performance
+# bitsandbytes>=0.41.0  # For 4-bit quantization
+# xformers>=0.0.20      # For memory-efficient attention 
