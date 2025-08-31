@@ -35,46 +35,85 @@ def eval_model_local(args):
     
     # For LLaVA models
     if "llava" in args.model_id.lower():
-        from transformers import LlavaForConditionalGeneration
-        model = LlavaForConditionalGeneration.from_pretrained(
-            args.model_id,
-            torch_dtype=torch.float16,
-            device_map="gpu",
-            low_cpu_mem_usage=True
-        )
-        processor = AutoProcessor.from_pretrained(args.model_id)
+        try:
+            from transformers import LlavaForConditionalGeneration
+            model = LlavaForConditionalGeneration.from_pretrained(
+                args.model_id,
+                dtype=torch.float16,
+                device_map="auto",
+                low_cpu_mem_usage=True
+            )
+            processor = AutoProcessor.from_pretrained(args.model_id)
+        except Exception as e:
+            print(f"Error loading LLaVA model: {e}")
+            print("Trying alternative LLaVA model names...")
+            # Try alternative LLaVA model names
+            alternative_models = [
+                "llava-hf/llava-1.5-7b-hf",
+                "llava-hf/llava-1.5-13b-hf",
+                "llava-hf/llava-1.6-34b-hf"
+            ]
+            for alt_model in alternative_models:
+                try:
+                    print(f"Trying: {alt_model}")
+                    model = LlavaForConditionalGeneration.from_pretrained(
+                        alt_model,
+                        dtype=torch.float16,
+                        device_map="auto",
+                        low_cpu_mem_usage=True
+                    )
+                    processor = AutoProcessor.from_pretrained(alt_model)
+                    print(f"Successfully loaded: {alt_model}")
+                    break
+                except Exception as e2:
+                    print(f"Failed to load {alt_model}: {e2}")
+                    continue
+            else:
+                raise Exception("Could not load any LLaVA model")
     
     # For Qwen models
     elif "qwen" in args.model_id.lower():
-        from transformers import Qwen2_5_VLForConditionalGeneration
-        model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
-            args.model_id,
-            torch_dtype=torch.float16,
-            device_map="gpu",
-            low_cpu_mem_usage=True
-        )
-        processor = AutoProcessor.from_pretrained(args.model_id)
+        try:
+            from transformers import Qwen2_5_VLForConditionalGeneration
+            model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+                args.model_id,
+                dtype=torch.float16,
+                device_map="auto",
+                low_cpu_mem_usage=True
+            )
+            processor = AutoProcessor.from_pretrained(args.model_id)
+        except Exception as e:
+            print(f"Error loading Qwen model: {e}")
+            raise
     
     # For InstructBLIP models
     elif "instructblip" in args.model_id.lower():
-        from transformers import InstructBlipForConditionalGeneration
-        model = InstructBlipForConditionalGeneration.from_pretrained(
-            args.model_id,
-            torch_dtype=torch.float16,
-            device_map="gpu",
-            low_cpu_mem_usage=True
-        )
-        processor = AutoProcessor.from_pretrained(args.model_id)
+        try:
+            from transformers import InstructBlipForConditionalGeneration
+            model = InstructBlipForConditionalGeneration.from_pretrained(
+                args.model_id,
+                dtype=torch.float16,
+                device_map="auto",
+                low_cpu_mem_usage=True
+            )
+            processor = AutoProcessor.from_pretrained(args.model_id)
+        except Exception as e:
+            print(f"Error loading InstructBLIP model: {e}")
+            raise
     
     else:
         # Generic fallback
-        model = AutoModelForCausalLM.from_pretrained(
-            args.model_id,
-            torch_dtype=torch.float16,
-            device_map="gpu",
-            low_cpu_mem_usage=True
-        )
-        processor = AutoProcessor.from_pretrained(args.model_id)
+        try:
+            model = AutoModelForCausalLM.from_pretrained(
+                args.model_id,
+                dtype=torch.float16,
+                device_map="auto",
+                low_cpu_mem_usage=True
+            )
+            processor = AutoProcessor.from_pretrained(args.model_id)
+        except Exception as e:
+            print(f"Error loading generic model: {e}")
+            raise
     
     model.eval()
     
@@ -110,7 +149,7 @@ def eval_model_local(args):
                 qs = multichoice_prompt.format(data['changed_caption'])
                 
                 # Format input based on model type
-                if "llava" in args.model_id.lower():
+                if "llava" in args.model_id.lower() or "llava" in str(type(model)).lower():
                     # LLaVA format
                     inputs = processor(
                         text=qs,
@@ -132,7 +171,7 @@ def eval_model_local(args):
                     # Extract only the generated part
                     response = response.split("Hallucination phrase:")[-1].strip()
                 
-                elif "qwen" in args.model_id.lower():
+                elif "qwen" in args.model_id.lower() or "qwen" in str(type(model)).lower():
                     # Qwen format
                     message = [
                         {"role": "system", "content": "You are a helpful assistant."},
@@ -165,7 +204,7 @@ def eval_model_local(args):
                     response = processor.tokenizer.decode(outputs[0], skip_special_tokens=True)
                     response = response.split(text)[-1].strip()
                 
-                elif "instructblip" in args.model_id.lower():
+                elif "instructblip" in args.model_id.lower() or "instructblip" in str(type(model)).lower():
                     # InstructBLIP format
                     inputs = processor(
                         text=qs,
@@ -226,7 +265,7 @@ def eval_model_local(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Local ViCrit evaluation for smaller models")
     parser.add_argument("--model_id", type=str, required=True, 
-                       help="Model ID (e.g., llava-v1.5-7b, Qwen/Qwen2.5-VL-7B-Instruct)")
+                       help="Model ID (e.g., llava-hf/llava-1.5-7b-hf, Qwen/Qwen2.5-VL-7B-Instruct)")
     parser.add_argument("--answers-file", type=str, required=True,
                        help="Path to save evaluation results")
     parser.add_argument("--batch-size", type=int, default=1,
@@ -239,6 +278,6 @@ if __name__ == "__main__":
     # Validate model selection
     if "72b" in args.model_id.lower() or "70b" in args.model_id.lower():
         print("Warning: You selected a 70B+ model which may not fit in local memory!")
-        print("Consider using a smaller model like llava-v1.5-7b")
+        print("Consider using a smaller model like llava-hf/llava-1.5-7b-hf")
     
     eval_model_local(args) 

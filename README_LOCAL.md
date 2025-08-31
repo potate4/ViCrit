@@ -22,8 +22,8 @@ python setup_local.py
 ### 2. Choose Your Model
 
 **Recommended for most local setups:**
-- **LLaVA 7B**: `llava-v1.5-7b` - Good balance of performance and memory usage
-- **LLaVA 13B**: `llava-v1.5-13b` - Better performance, needs more VRAM
+- **LLaVA 7B**: `llava-hf/llava-1.5-7b-hf` - Good balance of performance and memory usage
+- **LLaVA 13B**: `llava-hf/llava-1.5-13b-hf` - Better performance, needs more VRAM
 
 **Alternative options:**
 - **Qwen 7B**: `Qwen/Qwen2.5-VL-7B-Instruct` - Good performance
@@ -36,15 +36,15 @@ python setup_local.py
 
 # Or run manually
 python model_vicrit_local.py \
-    --model_id llava-v1.5-7b \
-    --answers-file ./eval_files/local/answers/llava-v1.5-7b.jsonl \
+    --model_id llava-hf/llava-1.5-7b-hf \
+    --answers-file ./eval_files/local/answers/llava-hf_llava-1.5-7b-hf.jsonl \
     --batch-size 1 \
     --max-samples 100
 ```
 
 ### 4. Score Results
 ```bash
-python score_local.py --results-file ./eval_files/local/answers/llava-v1.5-7b.jsonl
+python score_local.py --results-file ./eval_files/local/answers/llava-hf_llava-1.5-7b-hf.jsonl
 ```
 
 ## 📊 Hardware Requirements
@@ -76,10 +76,10 @@ export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:128
 ### LLaVA Models
 ```bash
 # 7B model (recommended for most setups)
-model_id="llava-v1.5-7b"
+model_id="llava-hf/llava-1.5-7b-hf"
 
 # 13B model (better performance)
-model_id="llava-v1.5-13b"
+model_id="llava-hf/llava-1.5-13b-hf"
 ```
 
 ### Qwen Models
@@ -122,7 +122,7 @@ Start with a small number of samples to test your setup:
 ```bash
 # Test with only 50 samples
 python model_vicrit_local.py \
-    --model_id llava-v1.5-7b \
+    --model_id llava-hf/llava-1.5-7b-hf \
     --answers-file ./test_results.jsonl \
     --max-samples 50
 ```
@@ -149,7 +149,7 @@ python model_vicrit_local.py \
 --batch-size 1
 
 # Use smaller model
---model_id llava-v1.5-7b
+--model_id llava-hf/llava-1.5-7b-hf
 
 # Enable memory optimization
 export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:64
