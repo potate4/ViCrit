@@ -150,26 +150,70 @@ def eval_model_local(args):
                 
                 # Format input based on model type
                 if "llava" in args.model_id.lower() or "llava" in str(type(model)).lower():
-                    # LLaVA format
-                    inputs = processor(
-                        text=qs,
-                        images=img,
-                        return_tensors="pt"
-                    ).to(model.device)
-                    
-                    # Generate response
-                    with torch.no_grad():
-                        outputs = model.generate(
-                            **inputs,
-                            max_new_tokens=128,
-                            temperature=0.1,
-                            do_sample=False,
-                            pad_token_id=processor.tokenizer.eos_token_id
+                    # LLaVA format - Fix for image processing
+                    try:
+                        # Use the proper LLaVA prompt format
+                        prompt = f"USER: {qs}\nASSISTANT:"
+                        
+                        # Process image and text together
+                        inputs = processor(
+                            text=prompt,
+                            images=img,
+                            return_tensors="pt",
+                            padding=True,
+                            truncation=True
                         )
-                    
-                    response = processor.tokenizer.decode(outputs[0], skip_special_tokens=True)
-                    # Extract only the generated part
-                    response = response.split("Hallucination phrase:")[-1].strip()
+                        
+                        # Move to device
+                        inputs = {k: v.to(model.device) for k, v in inputs.items()}
+                        
+                        # Generate response
+                        with torch.no_grad():
+                            outputs = model.generate(
+                                **inputs,
+                                max_new_tokens=128,
+                                temperature=0.1,
+                                do_sample=False,
+                                pad_token_id=processor.tokenizer.eos_token_id,
+                                eos_token_id=processor.tokenizer.eos_token_id
+                            )
+                        
+                        # Decode response
+                        response = processor.tokenizer.decode(outputs[0], skip_special_tokens=True)
+                        
+                        # Extract only the generated part (after ASSISTANT:)
+                        if "ASSISTANT:" in response:
+                            response = response.split("ASSISTANT:")[-1].strip()
+                        else:
+                            # Fallback: extract after the prompt
+                            response = response.split(prompt)[-1].strip()
+                        
+                    except Exception as e:
+                        print(f"LLaVA processing error: {e}")
+                        # Try alternative approach with simpler prompt
+                        try:
+                            inputs = processor(
+                                text=qs,
+                                images=img,
+                                return_tensors="pt"
+                            )
+                            inputs = {k: v.to(model.device) for k, v in inputs.items()}
+                            
+                            with torch.no_grad():
+                                outputs = model.generate(
+                                    **inputs,
+                                    max_new_tokens=128,
+                                    temperature=0.1,
+                                    do_sample=False,
+                                    pad_token_id=processor.tokenizer.eos_token_id
+                                )
+                            
+                            response = processor.tokenizer.decode(outputs[0], skip_special_tokens=True)
+                            response = response.split(qs)[-1].strip()
+                            
+                        except Exception as e2:
+                            print(f"Alternative LLaVA approach failed: {e2}")
+                            response = "Error processing image"
                 
                 elif "qwen" in args.model_id.lower() or "qwen" in str(type(model)).lower():
                     # Qwen format
@@ -270,7 +314,7 @@ if __name__ == "__main__":
                        help="Path to save evaluation results")
     parser.add_argument("--batch-size", type=int, default=1,
                        help="Batch size for processing (default: 1 for local)")
-    parser.add_argument("--max-samples", type=int, default=None,
+    parser.add_argument("--max_samples", type=int, default=None,
                        help="Maximum number of samples to evaluate (for testing)")
     
     args = parser.parse_args()

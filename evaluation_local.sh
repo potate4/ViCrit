@@ -31,7 +31,7 @@ python model_vicrit_local.py \
     --model_id $model_name \
     --answers-file "${output_dir}/${model_id//\//_}.jsonl" \
     --batch-size 1 \
-    --max-samples 100  # Start with 100 samples for testing
+    --max_samples 100  # Start with 100 samples for testing
 
 echo "Evaluation completed! Results saved to: ${output_dir}/${model_id//\//_}.jsonl"
 echo "To score the results, run: python score_local.py --results-file ${output_dir}/${model_id//\//_}.jsonl" 

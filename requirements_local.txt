@@ -8,6 +8,7 @@ tqdm>=4.64.0
 shortuuid>=1.0.0
 numpy>=1.21.0
 accelerate>=0.20.0
+huggingface_hub[hf_xet]
 
 # Optional: for better performance
 # bitsandbytes>=0.41.0  # For 4-bit quantization

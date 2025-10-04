@@ -39,7 +39,7 @@ python model_vicrit_local.py \
     --model_id llava-hf/llava-1.5-7b-hf \
     --answers-file ./eval_files/local/answers/llava-hf_llava-1.5-7b-hf.jsonl \
     --batch-size 1 \
-    --max-samples 100
+    --max_samples 100
 ```
 
 ### 4. Score Results
@@ -124,7 +124,7 @@ Start with a small number of samples to test your setup:
 python model_vicrit_local.py \
     --model_id llava-hf/llava-1.5-7b-hf \
     --answers-file ./test_results.jsonl \
-    --max-samples 50
+    --max_samples 50
 ```
 
 ## 🔍 Understanding the Output
